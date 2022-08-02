@@ -1,0 +1,51 @@
+quarkus:
+  application:
+    name: quarkus-27075-reproducer
+  shutdown:
+    timeout: 5s
+  log:
+    category:
+      org.mongodb.driver:
+        level: DEBUG
+  mongodb:
+    database: demoapp
+    min-pool-size: 2
+    max-pool-size: 10
+    max-connection-idle-time: 5M
+    max-connection-life-time: 15M
+    native:
+      dns:
+        use-vertx-dns-resolver: ${MONGO_DNS_VERTEX_RESOLVER:false}
+    tracing:
+      enabled: false
+  http:
+    cors: true
+    access-log:
+      enabled: false
+      pattern: long
+  swagger-ui:
+# Keep swagger ui for prod mode as well
+    always-include: true
+
+'%prod':
+  quarkus:
+    mongodb:
+      connection-string: ${MONGO_ENCODED_URL}
+
+
+
+# Development profile
+'%dev':
+  quarkus:
+    mongodb:
+      devservices:
+        enabled: true
+        image-name: mongo:4.2
+
+# Test profile
+'%test':
+  quarkus:
+    mongodb:
+      devservices:
+        enabled: true
+        image-name: mongo:4.2
